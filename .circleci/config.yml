@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: adoptopenjdk/openjdk17
+      - image: maven:3.8.4-jdk-22  # Use a Docker image with Maven 3.8.4 and Java 22
 
     working_directory: ~/app
 
@@ -11,18 +11,12 @@ jobs:
       - checkout
 
       - run:
-          name: Setup Environment
-          command: |
-            echo 'export JAVA_HOME=/opt/java/openjdk' >> $BASH_ENV
-            source $BASH_ENV
-
-      - run:
           name: Build and Test
           command: mvn clean install -DskipTests=false
 
       - save_cache:
           paths:
-            - ~/.m2
+            - ~/.m2/repository
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
 workflows:
