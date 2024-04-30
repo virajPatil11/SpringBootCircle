@@ -3,33 +3,26 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:11-jdk  # Updated Java version
+      - image: circleci/openjdk:17-jdk
 
-    working_directory: ~/project
+    working_directory: ~/app
 
     steps:
       - checkout
 
-      # Restore cached Maven dependencies (if any)
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "pom.xml" }}
-            - v1-dependencies-
-
       - run:
           name: Setup Environment
           command: |
-            echo 'export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64' >> $BASH_ENV
+            echo 'export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64' >> $BASH_ENV
             source $BASH_ENV
 
       - run:
           name: Build and Test
-          command: mvn clean package  # Adjusted Maven command
+          command: mvn clean install -DskipTests=false
 
-      # Store Maven dependencies in cache
       - save_cache:
           paths:
-            - ~/.m2/repository
+            - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
 
 workflows:
